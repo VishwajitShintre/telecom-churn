@@ -5,8 +5,18 @@ import numpy as np
 from PIL import Image
 
 #load the model from disk
+# import joblib
+# model = joblib.load(r"./notebook/model.sav")
 import joblib
-model = joblib.load(r"./notebook/model.sav")
+import os
+
+# Get the current directory of the script
+current_dir = os.path.dirname(__file__)
+model_path = os.path.join(current_dir, 'notebook', 'model.sav')
+
+# Load the model
+model = joblib.load(model_path)
+
 
 #Import python scripts
 from preprocessing import preprocess
