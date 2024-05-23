@@ -34,7 +34,7 @@ def main():
 
     #Setting Application sidebar default
     # image = Image.open('App.jpg')
-     import streamlit as st
+import streamlit as st
 from PIL import Image
 import os
 
