@@ -34,20 +34,21 @@ def main():
 
     #Setting Application sidebar default
     # image = Image.open('App.jpg')
-import streamlit as st
-from PIL import Image
-import os
+    import streamlit as st
+    from PIL import Image
+    import os
 
 # Get the directory of the current script
-current_dir = os.path.dirname(__file__)
-image_path = os.path.join(current_dir, 'App.jpg')
+    current_dir = os.path.dirname(__file__)
+    image_path = os.path.join(current_dir, 'App.jpg')
 
 # Check if the file exists before loading
-if os.path.exists(image_path):
-    image = Image.open(image_path)
-    st.image(image, caption='App Image')
-else:
-    st.error(f"Image file not found at {image_path}")
+     if os.path.exists(image_path):
+	image = Image.open(image_path)
+	st.image(image, caption='App Image')
+      else:
+	st.error(f"Image file not found at {image_path}")
+
 
 # Rest of your Streamlit app code
 
