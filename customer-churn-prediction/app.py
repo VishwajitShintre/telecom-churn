@@ -23,7 +23,7 @@ from preprocessing import preprocess
 
 def main():
     #Setting Application title
-    st.title('Telco Customer Churn Prediction App')
+    # st.title('Telco Customer Churn Prediction App')
 
       #Setting Application description
     st.markdown("""
