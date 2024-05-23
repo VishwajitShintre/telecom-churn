@@ -33,7 +33,25 @@ def main():
     st.markdown("<h3></h3>", unsafe_allow_html=True)
 
     #Setting Application sidebar default
-    image = Image.open('App.jpg')
+    # image = Image.open('App.jpg')
+     import streamlit as st
+from PIL import Image
+import os
+
+# Get the directory of the current script
+current_dir = os.path.dirname(__file__)
+image_path = os.path.join(current_dir, 'App.jpg')
+
+# Check if the file exists before loading
+if os.path.exists(image_path):
+    image = Image.open(image_path)
+    st.image(image, caption='App Image')
+else:
+    st.error(f"Image file not found at {image_path}")
+
+# Rest of your Streamlit app code
+
+	
     add_selectbox = st.sidebar.selectbox(
 	"How would you like to predict?", ("Online", "Batch"))
     st.sidebar.info('This app is created to predict Customer Churn')
