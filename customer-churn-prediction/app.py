@@ -5,28 +5,7 @@ import numpy as np
 from PIL import Image
 import joblib
 import os
-import streamlit_authenticator as stauth
-
-# User data storage
-user_data = {
-    "names": ["admin"],
-    "usernames": ["admin"],
-    "passwords": stauth.Hasher(["admin"]).generate()
-}
-
-# Function to add a new user to the dictionary
-def add_user(name, username, password):
-    if username not in user_data["usernames"]:
-        user_data["names"].append(name)
-        user_data["usernames"].append(username)
-        hashed_password = stauth.Hasher([password]).generate()[0]
-        user_data["passwords"].append(hashed_password)
-        st.success("You have successfully registered!")
-    else:
-        st.warning("Username already exists. Please choose a different one.")
-
-# Initialize authenticator
-authenticator = stauth.Authenticate(user_data["names"], user_data["usernames"], user_data["passwords"], 'some_cookie_name', 'some_signature_key', cookie_expiry_days=30)
+from user_management import authenticate, add_user
 
 # Define main application
 def main():
@@ -151,30 +130,45 @@ def main():
 # Registration
 def register():
     st.title("User Registration")
-    new_name = st.text_input("Enter your name")
     new_username = st.text_input("Enter a username")
     new_password = st.text_input("Enter a password", type="password")
 
     if st.button("Register"):
-        if new_name and new_username and new_password:
-            # Check if username already exists
-            if new_username in user_data["usernames"]:
-                st.warning("Username already exists. Please choose a different one.")
+        if new_username and new_password:
+            # Add the user
+            success = add_user(new_username, new_password)
+            if success:
+                st.success("You have successfully registered!")
             else:
-                add_user(new_name, new_username, new_password)
+                st.warning("Username already exists. Please choose a different one.")
         else:
             st.warning("Please fill out all fields.")
 
+# Login
+def login():
+    st.title("Login")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+        if authenticate(username, password):
+            st.session_state['logged_in'] = True
+            st.session_state['username'] = username
+            st.success("Logged in successfully!")
+            main()
+        else:
+            st.error("Username or password is incorrect")
+
 if __name__ == '__main__':
+    if 'logged_in' not in st.session_state:
+        st.session_state['logged_in'] = False
+
     auth_option = st.sidebar.selectbox("Choose Authentication Option", ["Login", "Register"])
 
     if auth_option == "Login":
-        name, authentication_status, username = authenticator.login('Login', 'main')
-        if authentication_status:
+        if st.session_state['logged_in']:
             main()
-        elif authentication_status == False:
-            st.error('Username/password is incorrect')
-        elif authentication_status == None:
-            st.warning('Please enter your username and password')
+        else:
+            login()
     elif auth_option == "Register":
         register()
