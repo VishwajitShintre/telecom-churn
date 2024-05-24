@@ -197,4 +197,7 @@ if __name__ == '__main__':
             main()
         elif authentication_status == False:
             st.error('Username/password is incorrect')
-        elif authentication
+        elif authentication_status == None:
+            st.warning('Please enter your username and password')
+    elif auth_option == "Register":
+        register()
