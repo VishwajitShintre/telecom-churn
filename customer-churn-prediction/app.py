@@ -13,9 +13,9 @@ from mysql.connector import Error
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='mysql',
+            host='your_mysql_host',
+            user='your_mysql_user',
+            password='your_mysql_password',
             database='streamlit_app'
         )
         if connection.is_connected():
@@ -212,3 +212,10 @@ if __name__ == '__main__':
     if auth_option == "Login":
         name, authentication_status, username = authenticator.login('Login', 'main')
         if authentication_status:
+            main()
+        elif authentication_status == False:
+            st.error('Username/password is incorrect')
+        elif authentication_status == None:
+            st.warning('Please enter your username and password')
+    elif auth_option == "Register":
+        register()
