@@ -144,6 +144,7 @@ def register():
             success = add_user(new_username, new_password)
             if success:
                 st.success("You have successfully registered!")
+                st.session_state['is_registering'] = False
             else:
                 st.warning("Username already exists. Please choose a different one.")
         else:
@@ -163,14 +164,20 @@ def login():
             main()
         else:
             st.error("Username or password is incorrect")
-            if st.button("Register here"):
-                register()
+            st.session_state['is_registering'] = True
+
+    if st.button("Register here"):
+        st.session_state['is_registering'] = True
 
 if __name__ == '__main__':
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
+    if 'is_registering' not in st.session_state:
+        st.session_state['is_registering'] = False
 
-    if st.session_state['logged_in']:
+    if st.session_state['is_registering']:
+        register()
+    elif st.session_state['logged_in']:
         main()
     else:
         login()
