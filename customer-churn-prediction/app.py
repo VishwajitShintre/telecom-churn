@@ -5,66 +5,28 @@ import numpy as np
 from PIL import Image
 import joblib
 import os
-import mysql.connector
 import streamlit_authenticator as stauth
-from mysql.connector import Error
 
-# Connect to MySQL database
-def get_db_connection():
-    try:
-        connection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='mysql',
-            database='streamlit_app'
-        )
-        if connection.is_connected():
-            return connection
-    except Error as e:
-        st.error(f"Error while connecting to MySQL: {e}")
-        return None
+# User data storage
+user_data = {
+    "names": ["admin"],
+    "usernames": ["admin"],
+    "passwords": stauth.Hasher(["admin"]).generate()
+}
 
-# Fetch user credentials from MySQL
-def fetch_users():
-    conn = get_db_connection()
-    if conn is None:
-        return []
-    try:
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT name, username, password FROM users")
-        users = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return users
-    except Error as e:
-        st.error(f"Error fetching users: {e}")
-        return []
-
-# Add new user to MySQL
+# Function to add a new user to the dictionary
 def add_user(name, username, password):
-    conn = get_db_connection()
-    if conn is None:
-        return
-    try:
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO users (name, username, password) VALUES (%s, %s, %s)", (name, username, password))
-        conn.commit()
-        cursor.close()
-        conn.close()
-    except Error as e:
-        st.error(f"Error adding user: {e}")
-
-# Get user credentials
-users = fetch_users()
-names = [user['name'] for user in users]
-usernames = [user['username'] for user in users]
-passwords = [user['password'] for user in users]
-
-# Hash passwords
-hashed_passwords = stauth.Hasher(passwords).generate()
+    if username not in user_data["usernames"]:
+        user_data["names"].append(name)
+        user_data["usernames"].append(username)
+        hashed_password = stauth.Hasher([password]).generate()[0]
+        user_data["passwords"].append(hashed_password)
+        st.success("You have successfully registered!")
+    else:
+        st.warning("Username already exists. Please choose a different one.")
 
 # Initialize authenticator
-authenticator = stauth.Authenticate(names, usernames, hashed_passwords, 'some_cookie_name', 'some_signature_key', cookie_expiry_days=30)
+authenticator = stauth.Authenticate(user_data["names"], user_data["usernames"], user_data["passwords"], 'some_cookie_name', 'some_signature_key', cookie_expiry_days=30)
 
 # Define main application
 def main():
@@ -196,13 +158,10 @@ def register():
     if st.button("Register"):
         if new_name and new_username and new_password:
             # Check if username already exists
-            if new_username in usernames:
+            if new_username in user_data["usernames"]:
                 st.warning("Username already exists. Please choose a different one.")
             else:
-                # Hash the new password
-                hashed_password = stauth.Hasher([new_password]).generate()[0]
-                add_user(new_name, new_username, hashed_password)
-                st.success("You have successfully registered!")
+                add_user(new_name, new_username, new_password)
         else:
             st.warning("Please fill out all fields.")
 
