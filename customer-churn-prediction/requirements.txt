@@ -1,6 +1,8 @@
 streamlit
+mysql-connector-python
+streamlit-authenticator
 pandas
 numpy
-matplotlib
-scikit-learn
+Pillow
 joblib
+
