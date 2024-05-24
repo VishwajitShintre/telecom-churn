@@ -144,12 +144,15 @@ def register():
             success = add_user(new_username, new_password)
             if success:
                 st.success("You have successfully registered!")
-                st.session_state['is_registering'] = False
                 st.session_state['registered'] = True
+                st.session_state['is_registering'] = False
             else:
                 st.warning("Username already exists. Please choose a different one.")
         else:
             st.warning("Please fill out all fields.")
+    
+    if st.button("Back to Login"):
+        st.session_state['is_registering'] = False
 
 # Login
 def login():
