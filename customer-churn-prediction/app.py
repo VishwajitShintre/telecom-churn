@@ -101,12 +101,13 @@ def main():
         preprocess_df = preprocess(features_df, 'Online')
 
         prediction = model.predict(preprocess_df)
+        prediction_proba = model.predict_proba(preprocess_df)[0][1]  # Get the probability of the positive class
 
         if st.button('Predict'):
             if prediction == 1:
-                st.warning('Yes, the customer will terminate the service.')
+                st.warning(f'Yes, the customer will terminate the service. Probability: {prediction_proba:.2f}')
             else:
-                st.success('No, the customer is happy with Telco Services.')
+                st.success(f'No, the customer is happy with Telco Services. Probability: {1 - prediction_proba:.2f}')
     else:
         st.subheader("Dataset upload")
         uploaded_file = st.file_uploader("Choose a file")
@@ -120,9 +121,13 @@ def main():
             if st.button('Predict'):
                 # Get batch prediction
                 prediction = model.predict(preprocess_df)
-                prediction_df = pd.DataFrame(prediction, columns=["Predictions"])
-                prediction_df = prediction_df.replace({1: 'Yes, the customer will terminate the service.', 
-                                                       0: 'No, the customer is happy with Telco Services.'})
+                prediction_proba = model.predict_proba(preprocess_df)[:, 1]  # Get probabilities of the positive class
+                prediction_df = pd.DataFrame({
+                    "Predictions": prediction,
+                    "Probability": prediction_proba
+                })
+                prediction_df["Predictions"] = prediction_df["Predictions"].replace({1: 'Yes, the customer will terminate the service.', 
+                                                                                    0: 'No, the customer is happy with Telco Services.'})
 
                 st.markdown("<h3></h3>", unsafe_allow_html=True)
                 st.subheader('Prediction')
