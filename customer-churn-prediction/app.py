@@ -6,6 +6,7 @@ from PIL import Image
 import joblib
 import os
 from user_management import authenticate, add_user
+from preprocessing import preprocess
 
 # Define main application
 def main():
