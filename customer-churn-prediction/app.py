@@ -7,34 +7,52 @@ import joblib
 import os
 import mysql.connector
 import streamlit_authenticator as stauth
+from mysql.connector import Error
 
 # Connect to MySQL database
 def get_db_connection():
-    return mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='mysql',
-        database='streamlit_app'
-    )
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='mysql',
+            database='streamlit_app'
+        )
+        if connection.is_connected():
+            return connection
+    except Error as e:
+        st.error(f"Error while connecting to MySQL: {e}")
+        return None
 
 # Fetch user credentials from MySQL
 def fetch_users():
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT name, username, password FROM users")
-    users = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return users
+    if conn is None:
+        return []
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT name, username, password FROM users")
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return users
+    except Error as e:
+        st.error(f"Error fetching users: {e}")
+        return []
 
 # Add new user to MySQL
 def add_user(name, username, password):
     conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO users (name, username, password) VALUES (%s, %s, %s)", (name, username, password))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    if conn is None:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO users (name, username, password) VALUES (%s, %s, %s)", (name, username, password))
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Error as e:
+        st.error(f"Error adding user: {e}")
 
 # Get user credentials
 users = fetch_users()
@@ -194,10 +212,3 @@ if __name__ == '__main__':
     if auth_option == "Login":
         name, authentication_status, username = authenticator.login('Login', 'main')
         if authentication_status:
-            main()
-        elif authentication_status == False:
-            st.error('Username/password is incorrect')
-        elif authentication_status == None:
-            st.warning('Please enter your username and password')
-    elif auth_option == "Register":
-        register()
