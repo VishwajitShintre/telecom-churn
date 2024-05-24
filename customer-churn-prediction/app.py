@@ -13,9 +13,9 @@ from mysql.connector import Error
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
-            host='your_mysql_host',
-            user='your_mysql_user',
-            password='your_mysql_password',
+            host='localhost',
+            user='root',
+            password='mysql',
             database='streamlit_app'
         )
         if connection.is_connected():
