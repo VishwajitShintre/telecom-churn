@@ -1,4 +1,3 @@
-# Import libraries
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -164,17 +163,14 @@ def login():
             main()
         else:
             st.error("Username or password is incorrect")
+            if st.button("Register here"):
+                register()
 
 if __name__ == '__main__':
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
 
-    auth_option = st.sidebar.selectbox("Choose Authentication Option", ["Login", "Register"])
-
-    if auth_option == "Login":
-        if st.session_state['logged_in']:
-            main()
-        else:
-            login()
-    elif auth_option == "Register":
-        register()
+    if st.session_state['logged_in']:
+        main()
+    else:
+        login()
