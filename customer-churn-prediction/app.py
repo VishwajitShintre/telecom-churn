@@ -24,7 +24,7 @@ def main():
 
     # Load the model
     model_path = os.path.join(current_dir, 'notebook', 'model.sav')
-    if os.path.exists(model_path)):
+    if os.path.exists(model_path):
         model = joblib.load(model_path)
         st.write("Model loaded successfully!")
     else:
