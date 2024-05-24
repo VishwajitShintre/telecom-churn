@@ -24,7 +24,7 @@ def main():
 
     # Load the model
     model_path = os.path.join(current_dir, 'notebook', 'model.sav')
-    if os.path.exists(model_path):
+    if os.path.exists(model_path)):
         model = joblib.load(model_path)
         st.write("Model loaded successfully!")
     else:
@@ -145,6 +145,7 @@ def register():
             if success:
                 st.success("You have successfully registered!")
                 st.session_state['is_registering'] = False
+                st.session_state['registered'] = True
             else:
                 st.warning("Username already exists. Please choose a different one.")
         else:
@@ -164,7 +165,6 @@ def login():
             main()
         else:
             st.error("Username or password is incorrect")
-            st.session_state['is_registering'] = True
 
     if st.button("Register here"):
         st.session_state['is_registering'] = True
@@ -174,10 +174,15 @@ if __name__ == '__main__':
         st.session_state['logged_in'] = False
     if 'is_registering' not in st.session_state:
         st.session_state['is_registering'] = False
+    if 'registered' not in st.session_state:
+        st.session_state['registered'] = False
 
     if st.session_state['is_registering']:
         register()
     elif st.session_state['logged_in']:
         main()
+    elif st.session_state['registered']:
+        st.session_state['registered'] = False
+        login()
     else:
         login()
